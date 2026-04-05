@@ -159,8 +159,23 @@ jobs:
     - name: Build
       shell: bash -l {0}
       run: |
-         make debug
+          make debug
     - name: Test with pytest
       shell: bash -l {0}
       run: |
-         python -m pytest -v
+          python -m pytest -v
+    - name: Install mahotas
+      shell: bash -l {0}
+      run: |
+        # This compiles and installs mahotas into the environment
+        pip install .
+
+    - name: Test with pytest
+      shell: bash -l {0}
+      run: |
+        # 1. Move to a temp directory so we don't import the local source folder
+        mkdir test_run
+        cd test_run
+        
+        # 2. Run pytest on the INSTALLED version of mahotas
+        pytest -v --pyargs mahotas.tests
