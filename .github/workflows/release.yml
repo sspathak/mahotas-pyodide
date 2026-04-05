@@ -28,6 +28,9 @@ jobs:
 
       - name: Generate Forced 4_0_9 Tag
         run: |
+          # Reclaim ownership from Docker's root user
+          sudo chown -R $USER:$USER dist
+          
           cd dist
           WHEEL=$(ls *.whl | grep "pyemscripten" | head -n 1)
           if [ -n "$WHEEL" ]; then

@@ -19,19 +19,22 @@ jobs:
 
       - name: Build WebAssembly Wheel
         run: |
-          # Ensure a clean slate for the C-extensions
+          # Clean slate
           rm -rf build dist mahotas.egg-info .pixi
           pixi run build-wasm
 
       - name: Generate Forced 4_0_9 Tag
         run: |
+          # Reclaim ownership from Docker's root user
+          sudo chown -R $USER:$USER dist
+          
           cd dist
           WHEEL=$(ls *.whl | grep "pyemscripten" | head -n 1)
           if [ -n "$WHEEL" ]; then
-            # Replaces modern pyemscripten_YYYY_N with emscripten_4_0_9
+            # Replace modern tag with legacy emscripten_4_0_9
             FORCED_WHEEL=$(echo $WHEEL | sed 's/pyemscripten_[0-9]\{4\}_[0-9]/emscripten_4_0_9/')
             cp "$WHEEL" "$FORCED_WHEEL"
-            echo "Created legacy wheel: $FORCED_WHEEL"
+            echo "Successfully created legacy tagged wheel: $FORCED_WHEEL"
           fi
 
       - name: Test WebAssembly Wheel
