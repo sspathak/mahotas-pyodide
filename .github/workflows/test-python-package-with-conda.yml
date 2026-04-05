@@ -32,7 +32,24 @@ jobs:
           - '2.1'
           - '2.2'
         exclude:
+            # NumPy 2.x requires Python 3.10+
+            - python-version: '3.9'
+              numpy-version: '2.0'
+            - python-version: '3.9'
+              numpy-version: '2.1'
+            - python-version: '3.9'
+              numpy-version: '2.2'
 
+            # Ensure 3.8 and 3.7 also exclude the new NumPy versions
+            - python-version: '3.8'
+              numpy-version: '2.1'
+            - python-version: '3.8'
+              numpy-version: '2.2'
+            - python-version: '3.7'
+              numpy-version: '2.1'
+            - python-version: '3.7'
+              numpy-version: '2.2'
+              
             # 3.8 is too old for NumPy 1.25+
             - python-version: '3.8'
               numpy-version: '1.25'
