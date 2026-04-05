@@ -49,7 +49,7 @@ jobs:
               numpy-version: '2.1'
             - python-version: '3.7'
               numpy-version: '2.2'
-              
+
             # 3.8 is too old for NumPy 1.25+
             - python-version: '3.8'
               numpy-version: '1.25'
@@ -153,6 +153,7 @@ jobs:
     - name: Install dependencies
       shell: bash -l {0}
       run: |
+        micromamba install --name mahotas_test_env setuptools wheel cython
         micromamba install --file tests-requirements.txt --name mahotas_test_env
         micromamba install --name mahotas_test_env freeimage imread
     - name: Build
