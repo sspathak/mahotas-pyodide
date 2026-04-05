@@ -19,26 +19,24 @@ jobs:
 
       - name: Build WebAssembly Wheel
         run: |
-          # Clean slate
           rm -rf build dist mahotas.egg-info .pixi
           pixi run build-wasm
 
+      # STEP MOVED UP: Test while only one wheel exists in /dist
+      - name: Test WebAssembly Wheel
+        run: pixi run test-wasm
+
+      # STEP MOVED DOWN: Create the duplicate wheel after testing is done
       - name: Generate Forced 4_0_9 Tag
         run: |
-          # Reclaim ownership from Docker's root user
           sudo chown -R $USER:$USER dist
-          
           cd dist
           WHEEL=$(ls *.whl | grep "pyemscripten" | head -n 1)
           if [ -n "$WHEEL" ]; then
-            # Replace modern tag with legacy emscripten_4_0_9
             FORCED_WHEEL=$(echo $WHEEL | sed 's/pyemscripten_[0-9]\{4\}_[0-9]/emscripten_4_0_9/')
             cp "$WHEEL" "$FORCED_WHEEL"
             echo "Successfully created legacy tagged wheel: $FORCED_WHEEL"
           fi
-
-      - name: Test WebAssembly Wheel
-        run: pixi run test-wasm
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

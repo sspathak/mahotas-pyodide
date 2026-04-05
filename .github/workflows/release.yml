@@ -26,20 +26,20 @@ jobs:
           rm -rf build dist mahotas.egg-info .pixi
           pixi run build-wasm
 
+      # STEP MOVED UP: Test before renaming
+      - name: Test WebAssembly Wheel
+        run: pixi run test-wasm
+
+      # STEP MOVED DOWN: Prepare artifacts for release
       - name: Generate Forced 4_0_9 Tag
         run: |
-          # Reclaim ownership from Docker's root user
           sudo chown -R $USER:$USER dist
-          
           cd dist
           WHEEL=$(ls *.whl | grep "pyemscripten" | head -n 1)
           if [ -n "$WHEEL" ]; then
             FORCED_WHEEL=$(echo $WHEEL | sed 's/pyemscripten_[0-9]\{4\}_[0-9]/emscripten_4_0_9/')
             cp "$WHEEL" "$FORCED_WHEEL"
           fi
-
-      - name: Test WebAssembly Wheel
-        run: pixi run test-wasm
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
