@@ -80,8 +80,11 @@ extensions = {
     'mahotas.features._zernike': ['mahotas/features/_zernike.cpp'],
 }
 
+# Grab the Pyodide cross-build environment include path if it exists
+numpy_include = os.environ.get("NUMPY_INCLUDE", numpy.get_include())
+
 ext_modules = [
-        setuptools.Extension(key, sources=sources, undef_macros=undef_macros, define_macros=define_macros, include_dirs=[numpy.get_include()])
+        setuptools.Extension(key, sources=sources, undef_macros=undef_macros, define_macros=define_macros, include_dirs=[numpy_include])
         for key,sources in extensions.items()]
 
 packages = setuptools.find_packages()
@@ -121,15 +124,6 @@ classifiers = [
 'Topic :: Scientific/Engineering :: Image Recognition',
 'Topic :: Software Development :: Libraries',
 'Programming Language :: Python',
-'Programming Language :: Python :: 2',
-'Programming Language :: Python :: 2.7',
-'Programming Language :: Python :: 3',
-'Programming Language :: Python :: 3.3',
-'Programming Language :: Python :: 3.4',
-'Programming Language :: Python :: 3.5',
-'Programming Language :: Python :: 3.6',
-'Programming Language :: Python :: 3.7',
-'Programming Language :: Python :: 3.8',
 'Programming Language :: Python :: 3.9',
 'Programming Language :: Python :: 3.10',
 'Programming Language :: Python :: 3.11',

@@ -1,0 +1,40 @@
+name: Build Pyodide Wheel
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+
+jobs:
+  build-and-test-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+
+      - name: Build WebAssembly Wheel
+        run: |
+          # Ensure a clean slate for the C-extensions
+          rm -rf build dist mahotas.egg-info .pixi
+          pixi run build-wasm
+
+      - name: Test WebAssembly Wheel
+        run: pixi run test-wasm
+
+      - name: Upload Artifact (For PRs and Commits)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mahotas-pyodide-wheel
+          path: dist/*.whl
+
+      - name: Publish to GitHub Releases (For Tags)
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: dist/*.whl
+          fail_on_unmatched_files: true

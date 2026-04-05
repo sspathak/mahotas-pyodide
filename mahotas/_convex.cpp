@@ -102,9 +102,23 @@ convexhull(PyObject* self, PyObject* args) {
 
 }
 
-PyMethodDef methods[] = {
-  {"convexhull", convexhull, METH_VARARGS , "compute convex hull"},
-  {NULL, NULL,0,NULL},
+static PyMethodDef _convex_methods[] = {
+  {"convexhull", (PyCFunction)convexhull, METH_VARARGS , "compute convex hull"},
+  {NULL, NULL, 0, NULL},
 };
 
-DECLARE_MODULE(_convex)
+static struct PyModuleDef _convex_moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_convex",
+    NULL,
+    -1,
+    _convex_methods,
+    NULL, NULL, NULL, NULL
+};
+
+extern "C" {
+    PyMODINIT_FUNC PyInit__convex(void) {
+		import_array();
+        return PyModule_Create(&_convex_moduledef);
+    }
+}

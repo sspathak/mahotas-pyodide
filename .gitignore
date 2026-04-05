@@ -5,3 +5,6 @@ mahotas.egg-info/
 *.pyc
 *.so
 *.pyd
+# pixi environments
+.pixi/*
+!.pixi/config.toml
