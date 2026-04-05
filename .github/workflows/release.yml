@@ -1,0 +1,43 @@
+name: Build and Release Wheels
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers the workflow ONLY when you push a tag like v1.4.20.wasm
+
+permissions:
+  contents: write # CRITICAL: This allows the action to create the release
+
+jobs:
+  release-wheels:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Check out your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Pixi (the package manager we used for the build environment)
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+
+      # 3. Build the WebAssembly wheels using our custom task
+      - name: Build WebAssembly Wheel
+        run: |
+          # Nuke caches to guarantee a clean build environment on the runner
+          rm -rf build dist mahotas.egg-info .pixi
+          pixi run build-wasm
+
+      # 4. Run the test suite inside Pyodide as a final safety check
+      - name: Test WebAssembly Wheel
+        run: |
+          pixi run test-wasm
+
+      # 5. Create the release and upload the compiled .whl files
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl
+          generate_release_notes: true
