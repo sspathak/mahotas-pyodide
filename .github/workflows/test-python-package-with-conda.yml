@@ -120,6 +120,9 @@ jobs:
               numpy-version: '1.25'
             - python-version: '3.13'
               numpy-version: '1.26'
+            # NumPy 2.0 does not have a stable build for Python 3.13
+            - python-version: '3.13'
+              numpy-version: '2.0' 
 
     steps:
     - uses: actions/checkout@v4
