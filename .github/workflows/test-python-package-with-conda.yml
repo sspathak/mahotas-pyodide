@@ -36,6 +36,8 @@ jobs:
             - python-version: '3.8'
               numpy-version: '1.19'
             - python-version: '3.8'
+              numpy-version: '1.22'
+            - python-version: '3.8'
               numpy-version: '1.25'
             - python-version: '3.8'
               numpy-version: '1.26'
