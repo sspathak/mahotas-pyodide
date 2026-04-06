@@ -2,6 +2,7 @@
 // Copyright 2008-2012 Luis Pedro Coelho <luis@luispedro.org>
 
 #include <Python.h>
+#define PY_ARRAY_UNIQUE_SYMBOL Mahotas_PyArray_API_Symbol
 #include <numpy/arrayobject.h>
 
 // holdref is a RAII object for decreasing a reference at scope exit
@@ -59,7 +60,6 @@ struct PythonException {
 
 // DECLARE_MODULE is slightly ugly, but it encapsulates the differences in
 // initializing a module between Python 2.x & Python 3.x
-
 #if PY_MAJOR_VERSION < 3
 #define DECLARE_MODULE(name) \
 extern "C" \
@@ -67,9 +67,7 @@ void init##name () { \
     import_array(); \
     (void)Py_InitModule(#name, methods); \
 }
-
 #else
-
 #define DECLARE_MODULE(name) \
 namespace { \
     struct PyModuleDef moduledef = { \
@@ -85,12 +83,11 @@ namespace { \
     }; \
 } \
 PyMODINIT_FUNC \
-PyInit_##name () { \
-    /* 2. Add a safety check: only init if not already initialized */ \
-    if (PyArray_API == NULL) { \
-        if (_import_array() < 0) { return NULL; } \
+PyInit_##name (void) { \
+    /* Robust NumPy 2.x initialization */ \
+    if (_import_array() < 0) { \
+        return NULL; \
     } \
     return PyModule_Create(&moduledef); \
 }
-
 #endif

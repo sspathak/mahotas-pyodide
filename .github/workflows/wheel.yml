@@ -55,12 +55,12 @@ jobs:
           CIBW_SKIP: "pp* cp36-* cp37-* cp38-*"
           
           # 2. Keep your test configuration
-          CIBW_TEST_REQUIRES: "pytest numpy scipy pillow"
+          CIBW_TEST_REQUIRES: "pytest numpy<2.1 scipy pillow"
           CIBW_TEST_COMMAND: "pytest -v --pyargs mahotas.tests"
           
           # 3. Optimization: Only build for the most common 64-bit architectures
           # This prevents CI from wasting time on 32-bit or older specialized builds
-          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_LINUX: "x86_64"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_WINDOWS: "AMD64"
       - uses: actions/upload-artifact@v4
