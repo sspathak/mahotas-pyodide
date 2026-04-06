@@ -2,8 +2,7 @@
 // Copyright 2008-2012 Luis Pedro Coelho <luis@luispedro.org>
 
 #include <Python.h>
-#include <numpy/ndarrayobject.h>
-
+#include <numpy/arrayobject.h>
 
 // holdref is a RAII object for decreasing a reference at scope exit
 struct holdref {
@@ -87,11 +86,11 @@ namespace { \
 } \
 PyMODINIT_FUNC \
 PyInit_##name () { \
-    import_array(); \
+    /* 2. Add a safety check: only init if not already initialized */ \
+    if (PyArray_API == NULL) { \
+        if (_import_array() < 0) { return NULL; } \
+    } \
     return PyModule_Create(&moduledef); \
 }
 
-
 #endif
-
-
