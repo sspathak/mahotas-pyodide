@@ -46,17 +46,19 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.2
         env:
-          # 1. Skip older Python versions (CPython 3.6, 3.7, 3.8)
-          CIBW_SKIP: "cp36-* cp37-* cp38-* pp37-* pp38-* pp39-*"
+          # 1. SKIP all PyPy (pp*) and old CPython (cp36-38)
+          # This ensures we only build for standard Python 3.9, 3.10, 3.11, 3.12, 3.13
+          CIBW_SKIP: "pp* cp36-* cp37-* cp38-*"
           
-          # 2. Tell cibuildwheel what dependencies are needed for the tests
+          # 2. Keep your test configuration
           CIBW_TEST_REQUIRES: "pytest numpy scipy pillow"
-          
-          # 3. The "Step Away" magic command. 
-          # cibuildwheel automatically runs this in a temp directory,
-          # so --pyargs ensures it tests the INSTALLED wheel.
           CIBW_TEST_COMMAND: "pytest -v --pyargs mahotas.tests"
-
+          
+          # 3. Optimization: Only build for the most common 64-bit architectures
+          # This prevents CI from wasting time on 32-bit or older specialized builds
+          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
